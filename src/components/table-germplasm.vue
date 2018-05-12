@@ -59,6 +59,7 @@ export default {
           });
       },
 
+      /*
       async testGraphQl(){
         console.log("Getting people...");
 
@@ -69,7 +70,8 @@ export default {
               console.log(result.data.data.people);
             });
       },
-
+      */
+      
      async getGermPlasm() {
         console.log(this.idToSearch);
         console.log(`{ readOneGermplasm(nameToSearch:${this.idToSearch}){ germplasmAlias, germplasmName, genus, specie } }`);
