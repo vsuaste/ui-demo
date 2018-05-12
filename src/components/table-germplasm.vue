@@ -11,6 +11,9 @@
   <button @click="getAllGermPlasm">Get all Germplasm </button>
   </div>
 
+  <div>
+  <button @click="testGraphQl">Test </button>
+  </div>
 
   <b-table striped hover :items="germs"></b-table>
 
@@ -31,33 +34,13 @@ Vue.use(BootstrapVue);
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-const items = [
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' }
-]
-
-const client = GQLClient('http://127.0.0.1:3000/graphql', {
-  fetch: {
-    // anything passed here is merged with
-    // the options passed to fetch()
-    credentials: true,
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest'
-    }
-  }
-});
-
-
-
 export default {
   name: 'tableGermplasm',
   data () {
     return {
       msg: 'Small demo requesting from two servers using graphQL backend',
       title : 'DEMO',
-      people : { },
+      people : [],
       items : items,
       germs : [],
       idToSearch : ""
@@ -66,41 +49,39 @@ export default {
   },
   methods: {
 
-    async  getAllGermPlasm(){
-      const res = await axios.post(
-        'http://localhost:3000/graphql', {
-        query: `
-          query germplasms{germplasmAlias, germplasmName, genus, specie}
-          `
-      },   {
-        headers: { 'Content-Type': 'application/graphql' },
-      })
-    },
+      async  getAllGermPlasm(){
+        const res = await axios.post('http://localhost:3000/graphql',
+          {
+            query: `{germplasms{germplasmAlias, germplasmName, genus, specie}}`
+          }).then((result) => {
+            console.log(result.data.data.germplasms);
+            this.germs = result.data.data.germplasms;
+          });
+      },
 
+      async testGraphQl(){
+        console.log("Getting people...");
 
-   getGermPlasm () {
-    client.query(`
-      query people{firstName}`)
-      .then((result) => {
-          console.log(result.data.people);
-        // => { id: 1234, name: ... }
-        });
+        const res = await axios.post('http://localhost:3000/graphql',
+            {
+              query: `{people{firstName}}`
+            }).then( (result)=>{
+              console.log(result.data.data.people);
+            });
+      },
 
-    /*
-      this.germs = this.items;
-      console.log(this.idToSearch);
-      let agent = new https.Agent({ rejectUnauthorized: false });
-      const res = await axios.post(
-        'http://localhost:3000/graphql', {
-        query: `
-          people{firstName}
-          `
-      },   {
-        headers: { 'Content-Type': 'application/graphql' },
-        httpsAgent: agent,
-      })
-      this.people = res.data.data.name */
-    }
+     async getGermPlasm() {
+        console.log(this.idToSearch);
+        console.log(`{ readOneGermplasm(nameToSearch:${this.idToSearch}){ germplasmAlias, germplasmName, genus, specie } }`);
+        const res = await axios.post(
+          'http://localhost:3000/graphql',
+          {
+            query: `{ readOneGermplasm(nameToSearch:"${this.idToSearch}"){ germplasmAlias, germplasmName, genus, specie } }`
+          }).then((result) => {
+            console.log(result.data.data.readOneGermplasm);
+            this.germs = [result.data.data.readOneGermplasm] ;
+          });
+      }
   }
 }
 </script>
