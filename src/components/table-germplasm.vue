@@ -11,9 +11,11 @@
   <button @click="getAllGermPlasm">Get all Germplasm </button>
   </div>
 
+<!--
   <div>
   <button @click="testGraphQl">Test </button>
   </div>
+-->
 
   <b-table striped hover :items="germs"></b-table>
 
@@ -41,7 +43,7 @@ export default {
       msg: 'Small demo requesting from two servers using graphQL backend',
       title : 'DEMO',
       people : [],
-      items : items,
+      //items : items,
       germs : [],
       idToSearch : ""
 
@@ -71,7 +73,7 @@ export default {
             });
       },
       */
-      
+
      async getGermPlasm() {
         console.log(this.idToSearch);
         console.log(`{ readOneGermplasm(nameToSearch:${this.idToSearch}){ germplasmAlias, germplasmName, genus, specie } }`);
